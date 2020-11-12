@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: examplenfs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      example: ex4nfs
+  template:
+    metadata:
+      labels:
+        example: ex4nfs
+    spec:
+      containers:
+      - name: container4nfs
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c']
+        args: ['echo "The host is $(hostname)" >> /dir/data; sleep 3600']
+        volumeMounts:
+        - name: nfsdata
+          mountPath: /dir
+      volumes:
+      - name: nfsdata
+        nfs:
+          path: /home/hifi/data
+          server: 100.101.56.162

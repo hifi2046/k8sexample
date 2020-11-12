@@ -1,0 +1,45 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: examplestatefulservice
+spec:
+  selector:
+    example: ex4state
+  clusterIP: None
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+  type: CluterIP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ex4state
+spec:
+  replicas: 3
+  serviceName: "examplestatefulservice"
+  selector:
+    matchLables:
+      example: ex4state
+  template:
+    metadata:
+      labels:
+        example: ex4state
+    spec:
+      containers:
+      - name: python4state
+        image: python:3.7
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c']
+        args: ['echo "The host is $(hostname)" >> /dir/data; echo "<p>The host is $(hostname)</p>" > index.html; python -m http.server 80']
+        volumeMounts:
+        - name: statefuldata
+          mountPath: /dir
+        ports:
+        - name: http
+          containerPort: 80
+  volumeClaimTemplate:
+  - metadata:
+      name: statefuldata
+

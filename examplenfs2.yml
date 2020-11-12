@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: examplenfs2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      example: ex4pvc
+  template:
+    metadata:
+      labels:
+        example: ex4pvc
+    spec:
+      containers:
+      - name: container4pvc
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c']
+        args: ['echo "The host is $(hostname)" >> /dir/data2; sleep 3600']
+        volumeMounts:
+        - name: pvcdata
+          mountPath: /dir
+      volumes:
+      - name: pvcdata
+        persistentVolumeClaim:
+          claimName: examplepvc
